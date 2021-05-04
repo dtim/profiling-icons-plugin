@@ -1,4 +1,4 @@
-package com.github.dtim.profilingiconsplugin
+package com.comitative.pic
 
 import com.intellij.AbstractBundle
 import org.jetbrains.annotations.NonNls

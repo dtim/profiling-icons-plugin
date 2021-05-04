@@ -1,6 +1,6 @@
-package com.github.dtim.profilingiconsplugin.services
+package com.comitative.pic.services
 
-import com.github.dtim.profilingiconsplugin.MyBundle
+import com.comitative.pic.MyBundle
 
 class MyApplicationService {
 

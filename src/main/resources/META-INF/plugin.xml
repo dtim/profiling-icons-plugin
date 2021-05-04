@@ -1,19 +1,18 @@
 <idea-plugin>
-    <id>com.github.dtim.profilingiconsplugin</id>
-    <name>profiling-icons-plugin</name>
-    <vendor>dtim</vendor>
+    <id>com.comitative.pic</id>
+    <name>Profiling Icons</name>
+    <vendor email="dtim@comitative.com" url="https://github.com/dtim/profiling-icons-plugin">Dmitrii Timofeev</vendor>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.dtim.profilingiconsplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.dtim.profilingiconsplugin.services.MyProjectService"/>
+        <projectService serviceImplementation="com.comitative.pic.services.StatisticsService"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.dtim.profilingiconsplugin.listeners.MyProjectManagerListener"
+        <listener class="com.comitative.pic.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
 </idea-plugin>
