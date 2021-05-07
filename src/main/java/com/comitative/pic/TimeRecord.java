@@ -1,16 +1,24 @@
 package com.comitative.pic;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TimeRecord {
-    private double relativeTime;
+    private final @NotNull MethodReference methodReference;
+    private final double relativeTime;
     private long absoluteTime;
     private long sampleCount;
 
-    public double getRelativeTime() {
-        return relativeTime;
+    public TimeRecord(@NotNull MethodReference methodReference, double relativeTime) {
+        this.methodReference = methodReference;
+        this.relativeTime = relativeTime;
     }
 
-    public void setRelativeTime(double relativeTime) {
-        this.relativeTime = relativeTime;
+    public @NotNull MethodReference getMethodReference() {
+        return methodReference;
+    }
+
+    public double getRelativeTime() {
+        return relativeTime;
     }
 
     public long getAbsoluteTime() {

@@ -2,7 +2,7 @@ package com.comitative.pic.parsers.asyncprofiler;
 
 import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
-import com.comitative.pic.parsers.ProfilerSnapshotParser;
+import com.comitative.pic.parsers.SnapshotParser;
 import com.comitative.pic.utils.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -20,27 +20,29 @@ class AsyncProfilerFlatParserTest {
 
     @Test
     void parseSummaryLine_shouldReturnLineComponents() {
-        AsyncProfilerFlatParser parser = new AsyncProfilerFlatParser();
-        Optional<Pair<MethodReference, TimeRecord>> result = parser.parseSummaryLine(SAMPLE_SUMMARY_LINE);
+        AsyncFlatParser parser = new AsyncFlatParser();
+        Optional<TimeRecord> result = parser.parseSummaryLine(SAMPLE_SUMMARY_LINE);
         assertTrue(result.isPresent(), "Parse result should be present");
-        result.ifPresent(pair -> {
-            MethodReference methodReference = pair.getFirst();
-            assertEquals("com.comitative.pt.MainKt.main_[j]", pair.getFirst().getMethodName());
-            checkTimeRecordValues(pair.getSecond(), 0.0965, 8420496037L, 842L);
+        result.ifPresent(timeRecord -> {
+            MethodReference method = timeRecord.getMethodReference();
+            assertEquals("com.comitative.pt.MainKt.main_[j]", method.getMethodName());
+            checkTimeRecordValues(timeRecord, 0.0965, 8420496037L, 842L);
         });
     }
 
     @Test
     void withSampleFile_shouldParseAllSummaryLines() {
         try {
-            ProfilerSnapshotParser parser = new AsyncProfilerFlatParser();
+            SnapshotParser parser = new AsyncFlatParser();
             try (InputStream report = openResourceFile("async_flat_sample_01.txt")) {
-                Map<MethodReference, TimeRecord> stats = parser.parseStream(report);
+                List<TimeRecord> stats = parser.parseStream(report);
                 assertNotNull(stats, "Method call time statistics should not be null");
                 assertEquals(73, stats.size());
 
                 MethodReference last = MethodReference.builder().setMethodName("java.util.Arrays.copyOf_[j]").build();
-                checkTimeRecordValues(stats.get(last), 0.0001, 9997228L, 1L);
+                checkTimeRecordValues(
+                        stats.get(stats.size() - 1),
+                        0.0001, 9997228L, 1L);
             }
         } catch (IOException e) {
             fail("Input/output error while reading the report");

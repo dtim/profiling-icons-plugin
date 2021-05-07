@@ -2,8 +2,7 @@ package com.comitative.pic.parsers.asyncprofiler;
 
 import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
-import com.comitative.pic.parsers.ProfilerSnapshotParser;
-import com.comitative.pic.utils.Pair;
+import com.comitative.pic.parsers.SnapshotParser;
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -12,10 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import java.util.Optional;
 import java.util.regex.*;
 
 /**
@@ -24,17 +21,31 @@ import java.util.regex.*;
  * The parser currently skips stack traces part and only collects information from the summary block.
  * This behavior may change in the future versions.
  */
-public final class AsyncProfilerFlatParser implements ProfilerSnapshotParser {
+public final class AsyncFlatParser implements SnapshotParser {
 
-    private static final Logger log = Logger.getInstance(AsyncProfilerFlatParser.class);
+    private static final Logger log = Logger.getInstance(AsyncFlatParser.class);
+
+    private static final String FORMAT_KEY = "async_profiler_flat";
+    private static final String FORMAT_NAME = "Async Profiler flat snapshot";
 
     @Override
-    public @NotNull Map<MethodReference, TimeRecord> parseStream(@NotNull InputStream inputStream) throws IOException {
-        final Map<MethodReference, TimeRecord> statistics = new HashMap<>();
+    public @NotNull String getFormatKey() {
+        return FORMAT_KEY;
+    }
+
+    // FIXME: use a localized resource bundle
+    @Override
+    public @NotNull String getFormatName() {
+        return FORMAT_NAME;
+    }
+
+    @Override
+    public List<TimeRecord> parseStream(@NotNull InputStream inputStream) throws IOException {
+        final List<TimeRecord> statistics = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line = reader.readLine();
         while (line != null) {
-            parseSummaryLine(line).ifPresent(entry -> statistics.put(entry.getFirst(), entry.getSecond()));
+            parseSummaryLine(line).ifPresent(statistics::add);
             line = reader.readLine();
         }
         return statistics;
@@ -52,21 +63,28 @@ public final class AsyncProfilerFlatParser implements ProfilerSnapshotParser {
      * @param line line to parse
      * @return Optional pair (method reference, statistics), Optional.empty() if the line does not match the format
      */
-    Optional<Pair<MethodReference, TimeRecord>> parseSummaryLine(String line) {
+    Optional<TimeRecord> parseSummaryLine(String line) {
         Matcher matcher = SUMMARY_LINE_PATTERN.matcher(line);
         if (matcher.matches()) {
             try {
-                MethodReference methodReference = MethodReference.builder().setMethodName(matcher.group(4)).build();
-                TimeRecord timeRecord = new TimeRecord();
-                timeRecord.setAbsoluteTime(Long.parseLong(matcher.group(1)));
-                timeRecord.setRelativeTime(normalizePercent(Double.parseDouble(matcher.group(2))));
-                timeRecord.setSampleCount(Long.parseLong(matcher.group(3)));
-                return Optional.of(new Pair<>(methodReference, timeRecord));
+                long absoluteTime = Long.parseLong(matcher.group(1));
+                double relativeTime = normalizePercent(Double.parseDouble(matcher.group(2)));
+                long sampleCount = Long.parseLong(matcher.group(3));
+                return parseMethodName(matcher.group(4)).flatMap(methodRef -> {
+                    TimeRecord timeRecord = new TimeRecord(methodRef, relativeTime);
+                    timeRecord.setAbsoluteTime(absoluteTime);
+                    timeRecord.setSampleCount(sampleCount);
+                    return Optional.of(timeRecord);
+                });
             } catch (NumberFormatException e) {
                 log.warn("invalid numeric value: " + e.getMessage());
             }
         }
         return Optional.empty();
+    }
+
+    @NotNull Optional<MethodReference> parseMethodName(@NotNull String name) {
+        return Optional.of(MethodReference.builder().setMethodName(name).build());
     }
 
     private static double normalizePercent(double percentValue) {
