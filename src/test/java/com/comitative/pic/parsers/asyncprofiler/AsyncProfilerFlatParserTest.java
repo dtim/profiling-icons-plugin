@@ -3,7 +3,6 @@ package com.comitative.pic.parsers.asyncprofiler;
 import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
 import com.comitative.pic.parsers.SnapshotParser;
-import com.comitative.pic.utils.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

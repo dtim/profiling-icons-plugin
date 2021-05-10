@@ -1,18 +1,22 @@
 <idea-plugin>
     <id>com.comitative.pic</id>
     <name>Profiling Icons</name>
-    <vendor email="dtim@comitative.com" url="https://github.com/dtim/profiling-icons-plugin">Dmitrii Timofeev</vendor>
+    <vendor
+            email="dtim@comitative.com"
+            url="https://github.com/dtim/profiling-icons-plugin">
+        Dmitrii Timofeev
+    </vendor>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceImplementation="com.comitative.pic.services.StatisticsService"/>
+        <codeInsight.lineMarkerProvider
+                language="JAVA"
+                implementationClass="com.comitative.pic.icons.JavaProfilingIconsProvider"/>
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.comitative.pic.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
