@@ -1,12 +1,9 @@
 package com.comitative.pic.icons;
 
-import com.comitative.pic.TimeRecord;
-import com.comitative.pic.services.StatisticsService;
+import com.comitative.pic.statistics.StatisticsService;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
@@ -14,10 +11,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Random;
-import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
 

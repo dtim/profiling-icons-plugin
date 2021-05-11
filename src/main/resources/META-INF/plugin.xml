@@ -13,10 +13,29 @@
     <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.kotlin</depends>
 
+    <extensionPoints>
+        <extensionPoint name="snapshotParser" interface="com.comitative.pic.parsers.SnapshotParser"/>
+    </extensionPoints>
+
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="com.comitative.pic.services.StatisticsService"/>
+        <projectService serviceImplementation="com.comitative.pic.statistics.StatisticsService"/>
         <codeInsight.lineMarkerProvider
                 language="JAVA"
                 implementationClass="com.comitative.pic.icons.JavaProfilingIconsProvider"/>
     </extensions>
+
+    <extensions defaultExtensionNs="com.comitative.pic">
+        <snapshotParser implementation="com.comitative.pic.parsers.AsyncFlatParser"/>
+    </extensions>
+
+    <actions>
+        <action
+                id="com.comitative.pic.statistics.LoadStatisticsAction"
+                class="com.comitative.pic.statistics.LoadStatisticsAction"
+                text="Load Profiling Statistics"
+                description="Profiling icons"
+                icon="AllIcons.Actions.Profile">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>

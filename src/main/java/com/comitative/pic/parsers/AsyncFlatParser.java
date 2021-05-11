@@ -1,8 +1,7 @@
-package com.comitative.pic.parsers.asyncprofiler;
+package com.comitative.pic.parsers;
 
 import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
-import com.comitative.pic.parsers.SnapshotParser;
 import org.jetbrains.annotations.NotNull;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -21,26 +20,26 @@ import java.util.regex.*;
  * The parser currently skips stack traces part and only collects information from the summary block.
  * This behavior may change in the future versions.
  */
-public final class AsyncFlatParser implements SnapshotParser {
+public final class AsyncFlatParser extends SnapshotParser {
 
     private static final Logger log = Logger.getInstance(AsyncFlatParser.class);
 
-    private static final String FORMAT_KEY = "async_profiler_flat";
-    private static final String FORMAT_NAME = "Async Profiler flat snapshot";
+    private static final String PARSER_LEY = "async_profiler_flat";
+    private static final String PARSER_NAME = "Async Profiler flat snapshot";
 
     @Override
-    public @NotNull String getFormatKey() {
-        return FORMAT_KEY;
+    public @NotNull String getKey() {
+        return PARSER_LEY;
     }
 
     // FIXME: use a localized resource bundle
     @Override
-    public @NotNull String getFormatName() {
-        return FORMAT_NAME;
+    public @NotNull String getName() {
+        return PARSER_NAME;
     }
 
     @Override
-    public List<TimeRecord> parseStream(@NotNull InputStream inputStream) throws IOException {
+    public @NotNull List<TimeRecord> parseStream(@NotNull InputStream inputStream) throws IOException {
         final List<TimeRecord> statistics = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line = reader.readLine();

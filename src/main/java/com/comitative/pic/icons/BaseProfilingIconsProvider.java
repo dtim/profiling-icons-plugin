@@ -1,6 +1,6 @@
 package com.comitative.pic.icons;
 
-import com.comitative.pic.services.StatisticsService;
+import com.comitative.pic.statistics.StatisticsService;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;

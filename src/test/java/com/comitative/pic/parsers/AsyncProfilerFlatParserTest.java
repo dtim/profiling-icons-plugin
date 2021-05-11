@@ -1,7 +1,8 @@
-package com.comitative.pic.parsers.asyncprofiler;
+package com.comitative.pic.parsers;
 
 import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
+import com.comitative.pic.parsers.AsyncFlatParser;
 import com.comitative.pic.parsers.SnapshotParser;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

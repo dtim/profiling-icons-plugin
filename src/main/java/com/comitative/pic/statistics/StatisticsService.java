@@ -1,9 +1,7 @@
-package com.comitative.pic.services;
+package com.comitative.pic.statistics;
 
-import com.comitative.pic.MethodReference;
 import com.comitative.pic.TimeRecord;
 import com.comitative.pic.parsers.SnapshotParser;
-import com.comitative.pic.parsers.asyncprofiler.AsyncFlatParser;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -11,10 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService {
@@ -27,20 +25,9 @@ public class StatisticsService {
     private static final ExtensionPointName<SnapshotParser> EP_NAME =
             ExtensionPointName.create("com.comitative.pic.snapshotParser");
 
-    private static final HashMap<String, SnapshotParser> PREDEFINED_PARSERS = new HashMap<>();
-    static {
-        AsyncFlatParser asyncFlatParser = new AsyncFlatParser();
-        PREDEFINED_PARSERS.put(asyncFlatParser.getFormatKey(), asyncFlatParser);
-    }
-
     private SnapshotParser getParser(@NotNull String formatKey) {
-        SnapshotParser parser = PREDEFINED_PARSERS.get(formatKey);
-        if (parser != null) {
-            return parser;
-        }
-
         for (SnapshotParser extensionParser: EP_NAME.getExtensionList()) {
-            if (formatKey.equals(extensionParser.getFormatKey())) {
+            if (formatKey.equals(extensionParser.getKey())) {
                 return extensionParser;
             }
         }
@@ -49,6 +36,14 @@ public class StatisticsService {
     }
 
     private volatile List<TimeRecord> statistics = new ArrayList<>();
+
+    public @NotNull List<SnapshotParser> getParserList() {
+        return Collections.unmodifiableList(
+                EP_NAME.getExtensionList()
+                        .stream()
+                        .sorted(Comparator.comparing(SnapshotParser::getName))
+                        .collect(Collectors.toList()));
+    }
 
     public boolean loadFile(@NotNull File file, @NotNull String formatKey) {
         SnapshotParser parser = getParser(formatKey);
