@@ -1,4 +1,4 @@
-package com.comitative.pic.icons;
+package com.comitative.pic.providers;
 
 import com.comitative.pic.statistics.StatisticsService;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
@@ -32,10 +32,12 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
                 if (methodClass != null) {
                     LOG.info("Got a class: " + methodClass.getQualifiedName());
                     String className = methodClass.getQualifiedName();
-                    String methodName = element.getText(); // ((PsiMethod) parent).getName();
+                    String methodName = element.getText();
+                    String fileName = element.getContainingFile().getVirtualFile().getPresentableName();
 
                     double relativeTime = rng.nextDouble();
-                    final String tooltipText = String.format("%4.1f%%", relativeTime * 100.0);
+                    final String tooltipText = String.format("%s:%s/%s %4.1f%%",
+                            fileName, className, methodName, relativeTime * 100.0);
                     lineMarkerInfo = new LineMarkerInfo<>(
                             (PsiIdentifier) element,
                             element.getTextRange(),

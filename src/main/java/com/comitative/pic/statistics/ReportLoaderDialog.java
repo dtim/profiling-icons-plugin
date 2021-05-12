@@ -31,14 +31,13 @@ public class ReportLoaderDialog extends DialogWrapper {
     }
 
     public @NotNull
-    File getSelectedFile() {
+    File getFile() {
         return new File(snapshotSelector.getComponent().getText());
     }
 
     public @NotNull
-    String getSelectedParserKey() {
-        SnapshotParser parser = parserSelector.getComponent().getItem();
-        return parser.getKey();
+    SnapshotParser getParser() {
+        return parserSelector.getComponent().getItem();
     }
 
     @Override

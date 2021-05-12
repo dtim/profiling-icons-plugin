@@ -1,4 +1,4 @@
-package com.comitative.pic.icons;
+package com.comitative.pic.providers;
 
 import com.comitative.pic.statistics.StatisticsService;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;

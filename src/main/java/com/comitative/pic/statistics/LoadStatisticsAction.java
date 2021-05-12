@@ -27,20 +27,20 @@ public class LoadStatisticsAction extends AnAction {
                             currentProject,
                             parserList.toArray(new SnapshotParser[0]));
                     if (dialog.showAndGet()) {
-                        File selectedFileName = dialog.getSelectedFile();
-                        String selectedParserKey = dialog.getSelectedParserKey();
-                        Messages.showMessageDialog(
-                                currentProject,
-                                selectedFileName.getName(),
-                                selectedParserKey,
-                                Messages.getInformationIcon());
+                        File selectedFile = dialog.getFile();
+                        SnapshotParser parser = dialog.getParser();
+                        if (service.loadFile(selectedFile, parser)) {
+                            LOG.info("Loaded the profiler snapshot " + selectedFile.getName());
+                        } else {
+                            LOG.warn("Unable to load the profiler snapshot " + selectedFile.getName());
+                            Messages.showMessageDialog(
+                                    currentProject,
+                                    "Unable to load the profiler snapshot",
+                                    "Load failed",
+                                    Messages.getErrorIcon());
+                        }
                     } else {
                         LOG.info("User decided not to load a snapshot");
-                        Messages.showMessageDialog(
-                                currentProject,
-                               "canceled",
-                               "Cancel",
-                               Messages.getErrorIcon());
                     }
                 } else {
                     LOG.error("No profiler snapshot parsers registered");

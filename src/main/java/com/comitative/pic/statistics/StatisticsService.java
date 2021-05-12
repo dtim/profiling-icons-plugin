@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService {
-    private static final Logger log = Logger.getInstance(StatisticsService.class);
+    private static final Logger LOG = Logger.getInstance(StatisticsService.class);
 
     ReadWriteLock statisticsLock = new ReentrantReadWriteLock();
     Lock readLock = statisticsLock.readLock();
@@ -45,39 +45,25 @@ public class StatisticsService {
                         .collect(Collectors.toList()));
     }
 
-    public boolean loadFile(@NotNull File file, @NotNull String formatKey) {
-        SnapshotParser parser = getParser(formatKey);
-        if (parser == null) {
-            log.error("No parser found for the snapshot format: " + formatKey);
-            return false;
-        }
-
+    public boolean loadFile(@NotNull File file, @NotNull SnapshotParser parser) {
         try (InputStream inputStream = new FileInputStream(file)) {
             List<TimeRecord> records = new ArrayList<>(parser.parseStream(inputStream));
             writeLock.lock();
             statistics = records;
             writeLock.unlock();
         } catch (FileNotFoundException e) {
-            log.error("File not found: " + file);
+            LOG.error("File not found: " + file);
             return false;
         } catch (IOException e) {
-            log.error("Input/output error while reading " + file + ": " + e.getMessage());
+            LOG.error("Input/output error while reading " + file + ": " + e.getMessage());
             return false;
         }
 
         return true;
     }
 
-    public List<TimeRecord> getTimeRecords(@NotNull String className) {
-        readLock.lock();
-        try {
-            return new ArrayList<>();
-        } finally {
-            readLock.unlock();
-        }
-    }
-
     public List<TimeRecord> getTimeRecords(@NotNull String className, @NotNull String methodName) {
+        LOG.info("Requested time records for " + className + " : " + methodName);
         readLock.lock();
         try {
             return new ArrayList<>();

@@ -21,7 +21,10 @@
         <projectService serviceImplementation="com.comitative.pic.statistics.StatisticsService"/>
         <codeInsight.lineMarkerProvider
                 language="JAVA"
-                implementationClass="com.comitative.pic.icons.JavaProfilingIconsProvider"/>
+                implementationClass="com.comitative.pic.providers.JavaProfilingIconsProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="com.comitative.pic.providers.KotlinProfilingIconsProvider"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.comitative.pic">
