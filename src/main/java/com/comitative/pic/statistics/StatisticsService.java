@@ -1,5 +1,6 @@
 package com.comitative.pic.statistics;
 
+import com.comitative.pic.CodeReference;
 import com.comitative.pic.TimeRecord;
 import com.comitative.pic.parsers.SnapshotParser;
 import com.intellij.openapi.components.Service;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -62,8 +64,8 @@ public class StatisticsService {
         return true;
     }
 
-    public List<TimeRecord> getTimeRecords(@NotNull String className, @NotNull String methodName) {
-        LOG.info("Requested time records for " + className + " : " + methodName);
+    public @NotNull List<TimeRecord> getTimeRecords(@NotNull CodeReference codeReference) {
+        LOG.info("Requested time records for " + codeReference);
         readLock.lock();
         try {
             return new ArrayList<>();

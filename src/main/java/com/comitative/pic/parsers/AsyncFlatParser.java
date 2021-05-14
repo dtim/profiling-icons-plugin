@@ -1,6 +1,6 @@
 package com.comitative.pic.parsers;
 
-import com.comitative.pic.MethodReference;
+import com.comitative.pic.CodeReference;
 import com.comitative.pic.TimeRecord;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,8 +82,8 @@ public final class AsyncFlatParser extends SnapshotParser {
         return Optional.empty();
     }
 
-    @NotNull Optional<MethodReference> parseMethodName(@NotNull String name) {
-        return Optional.of(MethodReference.builder().setMethodName(name).build());
+    @NotNull Optional<CodeReference> parseMethodName(@NotNull String name) {
+        return Optional.of(CodeReference.builder().setMethodName(name).build());
     }
 
     private static double normalizePercent(double percentValue) {

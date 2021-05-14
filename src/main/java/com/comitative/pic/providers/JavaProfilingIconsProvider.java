@@ -32,11 +32,12 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
                 if (methodClass != null) {
                     LOG.info("Got a class: " + methodClass.getQualifiedName());
                     String className = methodClass.getQualifiedName();
+
                     String methodName = element.getText();
                     String fileName = element.getContainingFile().getVirtualFile().getPresentableName();
 
                     double relativeTime = rng.nextDouble();
-                    final String tooltipText = String.format("%s:%s/%s %4.1f%%",
+                    final String tooltipText = String.format("%s: [%s] %s %4.1f%%",
                             fileName, className, methodName, relativeTime * 100.0);
                     lineMarkerInfo = new LineMarkerInfo<>(
                             (PsiIdentifier) element,

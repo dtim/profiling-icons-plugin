@@ -4,14 +4,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public final class MethodReference {
+public final class CodeReference {
 
     private final boolean javaMethod;
     private final @NotNull String packageName;
     private final @NotNull String className;
     private final @NotNull String methodName;
 
-    private MethodReference(
+    private CodeReference(
             boolean javaMethod,
             @NotNull String packageName,
             @NotNull String className,
@@ -38,12 +38,12 @@ public final class MethodReference {
         // TODO: do we gain anything by making a constructor private?
         private Builder() {}
 
-        public MethodReference build() {
+        public CodeReference build() {
             if (methodName == null) {
                 throw new IllegalArgumentException("method name can't be null");
             }
 
-            return new MethodReference(javaMethod, packageName, className, methodName);
+            return new CodeReference(javaMethod, packageName, className, methodName);
         }
 
         public Builder setJavaMethod(boolean javaMethod) {
@@ -87,7 +87,7 @@ public final class MethodReference {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MethodReference that = (MethodReference) o;
+        CodeReference that = (CodeReference) o;
         return javaMethod == that.javaMethod
                 && packageName.equals(that.packageName)
                 && className.equals(that.className)

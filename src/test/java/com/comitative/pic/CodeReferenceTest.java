@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MethodReferenceTest {
+class CodeReferenceTest {
 
     @Test
     void defaultMethodType_shouldBeJavaMethod() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setPackageName("com.comitative.pic")
                 .setClassName("MethodReferenceTest")
                 .setMethodName("defaultMethodType_shouldBeJavaMethod")
@@ -18,7 +18,7 @@ class MethodReferenceTest {
 
     @Test
     void defaultPackageName_shouldBeEmpty() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setMethodName("defaultPackageName_shouldBeEmpty")
                 .build();
         assertTrue(ref.getPackageName().isEmpty());
@@ -26,7 +26,7 @@ class MethodReferenceTest {
 
     @Test
     void defaultClassName_shouldBeEmpty() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setMethodName("defaultClassName_shouldBeEmpty")
                 .build();
         assertTrue(ref.getClassName().isEmpty());
@@ -34,7 +34,7 @@ class MethodReferenceTest {
 
     @Test
     void methodReference_shouldBeEqualToItself() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setPackageName("com.comitative")
                 .setClassName("Matrix")
                 .setMethodName("multiply")
@@ -44,13 +44,13 @@ class MethodReferenceTest {
 
     @Test
     void methodReferencesWithSameAttributes_shouldBeEqual() {
-        MethodReference r1 = MethodReference.builder()
+        CodeReference r1 = CodeReference.builder()
                 .setPackageName("com.comitative")
                 .setClassName("Matrix")
                 .setMethodName("multiply")
                 .build();
 
-        MethodReference r2 = MethodReference.builder()
+        CodeReference r2 = CodeReference.builder()
                 .setMethodName("multiply")
                 .setClassName("Matrix")
                 .setPackageName("com.comitative")
@@ -61,13 +61,13 @@ class MethodReferenceTest {
 
     @Test
     void methodType_shouldAffectEquality() {
-        MethodReference r1 = MethodReference.builder()
+        CodeReference r1 = CodeReference.builder()
                 .setPackageName("com.comitative")
                 .setClassName("Matrix")
                 .setMethodName("multiply")
                 .build();
 
-        MethodReference r2 = MethodReference.builder()
+        CodeReference r2 = CodeReference.builder()
                 .setJavaMethod(false)
                 .setMethodName("multiply")
                 .setClassName("Matrix")
@@ -79,7 +79,7 @@ class MethodReferenceTest {
 
     @Test
     void whenPackageNameIsPresent_toStringShouldStartWithPackageName() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setPackageName("com.comitative")
                 .setClassName("Matrix")
                 .setMethodName("multiply")
@@ -91,7 +91,7 @@ class MethodReferenceTest {
 
     @Test
     void whenJavaMethod_toStringShouldEndWithJava() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setPackageName("com.comitative")
                 .setClassName("Matrix")
                 .setMethodName("multiply")
@@ -102,7 +102,7 @@ class MethodReferenceTest {
 
     @Test
     void whenNotJavaMethod_toStringShouldEndWithNative() {
-        MethodReference ref = MethodReference.builder()
+        CodeReference ref = CodeReference.builder()
                 .setJavaMethod(false)
                 .setMethodName("pthread_create")
                 .build();

@@ -1,9 +1,7 @@
 package com.comitative.pic.parsers;
 
-import com.comitative.pic.MethodReference;
+import com.comitative.pic.CodeReference;
 import com.comitative.pic.TimeRecord;
-import com.comitative.pic.parsers.AsyncFlatParser;
-import com.comitative.pic.parsers.SnapshotParser;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +22,7 @@ class AsyncProfilerFlatParserTest {
         Optional<TimeRecord> result = parser.parseSummaryLine(SAMPLE_SUMMARY_LINE);
         assertTrue(result.isPresent(), "Parse result should be present");
         result.ifPresent(timeRecord -> {
-            MethodReference method = timeRecord.getMethodReference();
+            CodeReference method = timeRecord.getCodeReference();
             assertEquals("com.comitative.pt.MainKt.main_[j]", method.getMethodName());
             checkTimeRecordValues(timeRecord, 0.0965, 8420496037L, 842L);
         });
@@ -39,7 +37,7 @@ class AsyncProfilerFlatParserTest {
                 assertNotNull(stats, "Method call time statistics should not be null");
                 assertEquals(73, stats.size());
 
-                MethodReference last = MethodReference.builder().setMethodName("java.util.Arrays.copyOf_[j]").build();
+                CodeReference last = CodeReference.builder().setMethodName("java.util.Arrays.copyOf_[j]").build();
                 checkTimeRecordValues(
                         stats.get(stats.size() - 1),
                         0.0001, 9997228L, 1L);
