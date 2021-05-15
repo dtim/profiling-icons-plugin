@@ -9,7 +9,7 @@ class CodeReferenceTest {
     @Test
     void defaultMethodType_shouldBeJavaMethod() {
         CodeReference ref = CodeReference.builder()
-                .setQualifiedClassName("MethodReferenceTest")
+                .setFqClassName("MethodReferenceTest")
                 .setMethodName("defaultMethodType_shouldBeJavaMethod")
                 .build();
         assertTrue(ref.isJavaMethod());
@@ -20,13 +20,13 @@ class CodeReferenceTest {
         CodeReference ref = CodeReference.builder()
                 .setMethodName("defaultClassName_shouldBeEmpty")
                 .build();
-        assertTrue(ref.getQualifiedClassName().isEmpty());
+        assertTrue(ref.getFqClassName().isEmpty());
     }
 
     @Test
     void methodReference_shouldBeEqualToItself() {
         CodeReference ref = CodeReference.builder()
-                .setQualifiedClassName("com.comitative.Matrix")
+                .setFqClassName("com.comitative.Matrix")
                 .setMethodName("multiply")
                 .build();
         assertEquals(ref, ref);
@@ -35,13 +35,13 @@ class CodeReferenceTest {
     @Test
     void methodReferencesWithSameAttributes_shouldBeEqual() {
         CodeReference r1 = CodeReference.builder()
-                .setQualifiedClassName("com.comitative.Matrix")
+                .setFqClassName("com.comitative.Matrix")
                 .setMethodName("multiply")
                 .build();
 
         CodeReference r2 = CodeReference.builder()
                 .setMethodName("multiply")
-                .setQualifiedClassName("com.comitative.Matrix")
+                .setFqClassName("com.comitative.Matrix")
                 .build();
 
         assertEquals(r1, r2);
@@ -50,14 +50,14 @@ class CodeReferenceTest {
     @Test
     void methodType_shouldAffectEquality() {
         CodeReference r1 = CodeReference.builder()
-                .setQualifiedClassName("Matrix")
+                .setFqClassName("Matrix")
                 .setMethodName("multiply")
                 .build();
 
         CodeReference r2 = CodeReference.builder()
                 .setJavaMethod(false)
                 .setMethodName("multiply")
-                .setQualifiedClassName("Matrix")
+                .setFqClassName("Matrix")
                 .build();
 
         assertNotEquals(r1, r2);
@@ -66,7 +66,7 @@ class CodeReferenceTest {
     @Test
     void whenJavaMethod_toStringShouldEndWithJava() {
         CodeReference ref = CodeReference.builder()
-                .setQualifiedClassName("Matrix")
+                .setFqClassName("Matrix")
                 .setMethodName("multiply")
                 .build();
 

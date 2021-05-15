@@ -23,7 +23,7 @@ class AsyncProfilerFlatParserTest {
         assertTrue(result.isPresent(), "Parse result should be present");
         result.ifPresent(timeRecord -> {
             CodeReference method = timeRecord.getCodeReference();
-            assertEquals("com.comitative.pt.MainKt", method.getQualifiedClassName());
+            assertEquals("com.comitative.pt.MainKt", method.getFqClassName());
             assertEquals("main", method.getMethodName());
             checkTimeRecordValues(timeRecord, 0.0965, 8420496037L, 842L);
         });
@@ -60,8 +60,8 @@ class AsyncProfilerFlatParserTest {
             final String expectedClassName = SAMPLE_JAVA_NAME_EXPECTED_CLASSES[i];
             final String expectedMethodName = SAMPLE_JAVA_NAME_EXPECTED_METHODS[i];
             parseResult.ifPresent(ref -> {
-                assertEquals(expectedClassName, ref.getQualifiedClassName());
-                assertEquals(expectedMethodName, ref.getMethodName());
+                assertEquals(expectedClassName, ref.getFqClassName(), "Incorrect class name");
+                assertEquals(expectedMethodName, ref.getMethodName(), "Incorrect method name");
             });
         }
     }
@@ -105,6 +105,7 @@ class AsyncProfilerFlatParserTest {
             "com.baeldung.jni.HelloWorldJNI.sayHello()Ljava/lang/String;_[j]",
             "com.baeldung.jni.HelloWorldJNI.main([Ljava/lang/String;)V_[j]",
             "Matrix.<init>",
+            "edu.coursera.parallel.OneDimAveragingPhaserTest.lambda$runParallelBarrier$0([D[DIIIILjava/util/concurrent/Phaser;)V_[j]"
     };
 
     // Note: this array should contain the same number of elements as SAMPLE_JAVA_NAMES
@@ -115,7 +116,8 @@ class AsyncProfilerFlatParserTest {
             "Matrix.Wrapper.createRandom.1",
             "com.baeldung.jni.HelloWorldJNI",
             "com.baeldung.jni.HelloWorldJNI",
-            "Matrix"
+            "Matrix",
+            "edu.coursera.parallel.OneDimAveragingPhaserTest.lambda.runParallelBarrier"
     };
 
     // Note: this array should contain the same number of elements as SAMPLE_JAVA_NAMES
@@ -126,7 +128,8 @@ class AsyncProfilerFlatParserTest {
             "apply",
             "sayHello",
             "main",
-            "<init>"
+            "<init>",
+            "0"
     };
 
     private static final String[] SAMPLE_NATIVE_NAMES = {
@@ -136,6 +139,7 @@ class AsyncProfilerFlatParserTest {
             "clear_page_erms_[k]",
             "CardTableExtension::scavenge_contents_parallel(ObjectStartArray*, MutableSpace*, HeapWord*, PSPromotionManager*, unsigned int, unsigned int)",
             "SpinPause",
+            "operator new(unsigned long)",
             "[unknown]"
     };
 

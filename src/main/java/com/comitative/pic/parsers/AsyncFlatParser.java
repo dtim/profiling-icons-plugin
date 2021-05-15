@@ -107,9 +107,7 @@ public final class AsyncFlatParser extends SnapshotParser {
         int start = 0;
         while (start < len) {
             int sepIndex = takeUntil(name, start, len,
-                    c -> NAME_SEPARATORS.contains(c)
-                            || NATIVE_NAME_MARKERS.contains(c)
-                            || c == '(');
+                    c -> c == '.' || c == '$' || c == '(' || NATIVE_NAME_MARKERS.contains(c));
             if (sepIndex < len) {
                 char sep = name.charAt(sepIndex);
                 if (NATIVE_NAME_MARKERS.contains(sep)) {
@@ -131,7 +129,7 @@ public final class AsyncFlatParser extends SnapshotParser {
         if (numComponents >= 2) {
             CodeReference ref = CodeReference.builder()
                     .setMethodName(components.get(numComponents - 1))
-                    .setQualifiedClassName(String.join(".", components.subList(0, numComponents - 1)))
+                    .setFqClassName(String.join(".", components.subList(0, numComponents - 1)))
                     .build();
             return Optional.of(ref);
         }
@@ -160,7 +158,6 @@ public final class AsyncFlatParser extends SnapshotParser {
     private static final Pattern SUMMARY_LINE_PATTERN =
             Pattern.compile("^\\s*(\\d+)\\s+(\\d+\\.\\d+)%\\s+(\\d+)\\s+(.+)\\s*$");
 
-    private static final Set<Character> NAME_SEPARATORS = new TreeSet<>(Arrays.asList('.', '$'));
     private static final Set<Character> NATIVE_NAME_MARKERS = new TreeSet<>(Arrays.asList(':', '/'));
 
     private static final String JAVA_METHOD_MARKER = "_[j]";
