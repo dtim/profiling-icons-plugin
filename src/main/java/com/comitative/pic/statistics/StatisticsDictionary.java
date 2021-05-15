@@ -20,9 +20,6 @@ class StatisticsDictionary {
 
     void add(@NotNull TimeRecord timeRecord) {
         CodeReference codeReference = timeRecord.getCodeReference();
-        String packageName = codeReference.getPackageName();
-        if (!packageName.isEmpty()) {
-        }
     }
 
     List<TimeRecord> getTimeRecords(@NotNull CodeReference codeReference) {

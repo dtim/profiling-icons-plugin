@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import java.util.function.Function;
 import java.util.regex.*;
 
 /**
@@ -82,8 +83,68 @@ public final class AsyncFlatParser extends SnapshotParser {
         return Optional.empty();
     }
 
+    /**
+     * Parse name representations in the snapshot file and produce code references.
+     *
+     * @param name a name to parse.
+     * @return an optional code reference, empty when the name is incorrect or should be ignored
+     *
+     * Notes:
+     *   - This implementation of the parser uses a very simple string processing algorithm:
+     *     split the name components by known separators and ignore the rest.
+     *     This approach is very simple but not general enough to handle native names (e.g., JVM GC functions
+     *     or system calls), method signatures etc. This simple parsing algorithm will be replaced with a more
+     *     sophisticated parser based on Grammar Kit upon the completion of a better
+     *     PSI/snapshot name matching algorithm.
+     */
     @NotNull Optional<CodeReference> parseMethodName(@NotNull String name) {
-        return Optional.of(CodeReference.builder().setMethodName(name).build());
+        ArrayList<String> components = new ArrayList<>();
+        int len = name.length();
+        if (name.endsWith(JAVA_METHOD_MARKER)) {
+            len -= JAVA_METHOD_MARKER_LENGTH;
+        }
+
+        int start = 0;
+        while (start < len) {
+            int sepIndex = takeUntil(name, start, len,
+                    c -> NAME_SEPARATORS.contains(c)
+                            || NATIVE_NAME_MARKERS.contains(c)
+                            || c == '(');
+            if (sepIndex < len) {
+                char sep = name.charAt(sepIndex);
+                if (NATIVE_NAME_MARKERS.contains(sep)) {
+                    break;
+                } else {
+                    components.add(name.substring(start, sepIndex));
+                    start = sepIndex + 1;
+                    if (sep == '(') {
+                        break;
+                    }
+                }
+            } else {
+                components.add(name.substring(start, len));
+                break;
+            }
+        }
+
+        int numComponents = components.size();
+        if (numComponents >= 2) {
+            CodeReference ref = CodeReference.builder()
+                    .setMethodName(components.get(numComponents - 1))
+                    .setQualifiedClassName(String.join(".", components.subList(0, numComponents - 1)))
+                    .build();
+            return Optional.of(ref);
+        }
+
+        return Optional.empty();
+    }
+
+    private int takeUntil(@NotNull String text, int start, int end, Function<Character, Boolean> predicate) {
+        int i = start;
+        while (i < end && !predicate.apply(text.charAt(i))) {
+            i += 1;
+        }
+        return i;
     }
 
     private static double normalizePercent(double percentValue) {
@@ -99,4 +160,9 @@ public final class AsyncFlatParser extends SnapshotParser {
     private static final Pattern SUMMARY_LINE_PATTERN =
             Pattern.compile("^\\s*(\\d+)\\s+(\\d+\\.\\d+)%\\s+(\\d+)\\s+(.+)\\s*$");
 
+    private static final Set<Character> NAME_SEPARATORS = new TreeSet<>(Arrays.asList('.', '$'));
+    private static final Set<Character> NATIVE_NAME_MARKERS = new TreeSet<>(Arrays.asList(':', '/'));
+
+    private static final String JAVA_METHOD_MARKER = "_[j]";
+    private static final int JAVA_METHOD_MARKER_LENGTH = JAVA_METHOD_MARKER.length();
 }

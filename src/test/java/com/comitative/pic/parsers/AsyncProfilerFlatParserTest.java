@@ -23,7 +23,8 @@ class AsyncProfilerFlatParserTest {
         assertTrue(result.isPresent(), "Parse result should be present");
         result.ifPresent(timeRecord -> {
             CodeReference method = timeRecord.getCodeReference();
-            assertEquals("com.comitative.pt.MainKt.main_[j]", method.getMethodName());
+            assertEquals("com.comitative.pt.MainKt", method.getQualifiedClassName());
+            assertEquals("main", method.getMethodName());
             checkTimeRecordValues(timeRecord, 0.0965, 8420496037L, 842L);
         });
     }
@@ -35,15 +36,42 @@ class AsyncProfilerFlatParserTest {
             try (InputStream report = openResourceFile("async_flat_sample_01.txt")) {
                 List<TimeRecord> stats = parser.parseStream(report);
                 assertNotNull(stats, "Method call time statistics should not be null");
-                assertEquals(73, stats.size());
 
-                CodeReference last = CodeReference.builder().setMethodName("java.util.Arrays.copyOf_[j]").build();
+                // The sample file contains 73 summary lines, but only 21 of them refer to Java/Kotlin names
+                assertEquals(21, stats.size());
+
+                CodeReference last = CodeReference.builder().setMethodName("copyOf").build();
                 checkTimeRecordValues(
                         stats.get(stats.size() - 1),
                         0.0001, 9997228L, 1L);
             }
         } catch (IOException e) {
             fail("Input/output error while reading the report");
+        }
+    }
+
+    @Test
+    void nameParser_shouldParseJavaNames() {
+        AsyncFlatParser parser = new AsyncFlatParser();
+        int testSetSize = SAMPLE_JAVA_NAMES.length;
+        for (int i = 0; i < testSetSize; i++) {
+            Optional<CodeReference> parseResult = parser.parseMethodName(SAMPLE_JAVA_NAMES[i]);
+            assertTrue(parseResult.isPresent(), SAMPLE_JAVA_NAMES[i]);
+            final String expectedClassName = SAMPLE_JAVA_NAME_EXPECTED_CLASSES[i];
+            final String expectedMethodName = SAMPLE_JAVA_NAME_EXPECTED_METHODS[i];
+            parseResult.ifPresent(ref -> {
+                assertEquals(expectedClassName, ref.getQualifiedClassName());
+                assertEquals(expectedMethodName, ref.getMethodName());
+            });
+        }
+    }
+
+    @Test
+    void nameParser_shouldIgnoreNativeNames() {
+        AsyncFlatParser parser = new AsyncFlatParser();
+        for (String name: SAMPLE_NATIVE_NAMES) {
+            Optional<CodeReference> parseResult = parser.parseMethodName(name);
+            assertFalse(parseResult.isPresent());
         }
     }
 
@@ -67,4 +95,48 @@ class AsyncProfilerFlatParserTest {
 
     private static final String SAMPLE_SUMMARY_LINE =
             "  8420496037    9.65%      842  com.comitative.pt.MainKt.main_[j]";
+
+    // Note: if you modify this array, make sure to update SAMPLE_JAVA_NAME_CLASSES and SAMPLE_JAVA_NAME_METHODS below
+    private static final String[] SAMPLE_JAVA_NAMES = {
+            "MyClass.myMethod",
+            "java.lang.Double.valueOf",
+            "com.comitative.pt.MainKt.main_[j]",
+            "Matrix$Wrapper.createRandom$1.apply",
+            "com.baeldung.jni.HelloWorldJNI.sayHello()Ljava/lang/String;_[j]",
+            "com.baeldung.jni.HelloWorldJNI.main([Ljava/lang/String;)V_[j]",
+            "Matrix.<init>",
+    };
+
+    // Note: this array should contain the same number of elements as SAMPLE_JAVA_NAMES
+    private static final String[] SAMPLE_JAVA_NAME_EXPECTED_CLASSES = {
+            "MyClass",
+            "java.lang.Double",
+            "com.comitative.pt.MainKt",
+            "Matrix.Wrapper.createRandom.1",
+            "com.baeldung.jni.HelloWorldJNI",
+            "com.baeldung.jni.HelloWorldJNI",
+            "Matrix"
+    };
+
+    // Note: this array should contain the same number of elements as SAMPLE_JAVA_NAMES
+    private static final String[] SAMPLE_JAVA_NAME_EXPECTED_METHODS = {
+            "myMethod",
+            "valueOf",
+            "main",
+            "apply",
+            "sayHello",
+            "main",
+            "<init>"
+    };
+
+    private static final String[] SAMPLE_NATIVE_NAMES = {
+            "Monitor::IUnlock(bool)",
+            "/usr/lib/x86_64-linux-gnu/libc-2.31.so",
+            "PhaseIdealLoop::is_dominator(Node*, Node*) [clone .part.0]",
+            "clear_page_erms_[k]",
+            "CardTableExtension::scavenge_contents_parallel(ObjectStartArray*, MutableSpace*, HeapWord*, PSPromotionManager*, unsigned int, unsigned int)",
+            "SpinPause",
+            "[unknown]"
+    };
+
 }

@@ -7,18 +7,15 @@ import java.util.Objects;
 public final class CodeReference {
 
     private final boolean javaMethod;
-    private final @NotNull String packageName;
-    private final @NotNull String className;
+    private final @NotNull String qualifiedClassName;
     private final @NotNull String methodName;
 
     private CodeReference(
             boolean javaMethod,
-            @NotNull String packageName,
-            @NotNull String className,
+            @NotNull String fqClassName,
             @NotNull String methodName) {
         this.javaMethod = javaMethod;
-        this.packageName = packageName;
-        this.className = className;
+        this.qualifiedClassName = fqClassName;
         this.methodName = methodName;
     }
 
@@ -30,12 +27,9 @@ public final class CodeReference {
         private static final String EMPTY_NAME = "";
 
         private boolean javaMethod = true;
-        private String packageName = EMPTY_NAME;
-        private String className = EMPTY_NAME;
+        private String qualifiedClassName = EMPTY_NAME;
         private String methodName;
 
-        // TODO: we may allow users to directly construct builder instances: new MethodReference.Builder()
-        // TODO: do we gain anything by making a constructor private?
         private Builder() {}
 
         public CodeReference build() {
@@ -43,7 +37,7 @@ public final class CodeReference {
                 throw new IllegalArgumentException("method name can't be null");
             }
 
-            return new CodeReference(javaMethod, packageName, className, methodName);
+            return new CodeReference(javaMethod, qualifiedClassName, methodName);
         }
 
         public Builder setJavaMethod(boolean javaMethod) {
@@ -51,13 +45,8 @@ public final class CodeReference {
             return this;
         }
 
-        public Builder setPackageName(@NotNull String packageName) {
-            this.packageName = packageName;
-            return this;
-        }
-
-        public Builder setClassName(@NotNull String className) {
-            this.className = className;
+        public Builder setQualifiedClassName(@NotNull String className) {
+            this.qualifiedClassName = className;
             return this;
         }
 
@@ -71,12 +60,8 @@ public final class CodeReference {
         return javaMethod;
     }
 
-    public @NotNull String getPackageName() {
-        return packageName;
-    }
-
-    public @NotNull String getClassName() {
-        return className;
+    public @NotNull String getQualifiedClassName() {
+        return qualifiedClassName;
     }
 
     public @NotNull String getMethodName() {
@@ -89,25 +74,20 @@ public final class CodeReference {
         if (o == null || getClass() != o.getClass()) return false;
         CodeReference that = (CodeReference) o;
         return javaMethod == that.javaMethod
-                && packageName.equals(that.packageName)
-                && className.equals(that.className)
+                && qualifiedClassName.equals(that.qualifiedClassName)
                 && methodName.equals(that.methodName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(javaMethod, packageName, className, methodName);
+        return Objects.hash(javaMethod, qualifiedClassName, methodName);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
 
-        if (!packageName.isEmpty()) {
-            sb.append("[").append(packageName).append("] ");
-        }
-
-        sb.append(className).append("::").append(methodName);
+        sb.append(qualifiedClassName).append("::").append(methodName);
         if (javaMethod) {
             sb.append(" <java>");
         } else {

@@ -11,6 +11,8 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
@@ -18,6 +20,40 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
     private final Random rng = new Random();
     private static final Logger LOG = Logger.getInstance(JavaProfilingIconsProvider.class);
 
+    @Override
+    public LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
+        return null;
+    }
+
+    @Override
+    public void collectSlowLineMarkers(
+            @NotNull List<? extends PsiElement> elements,
+            @NotNull Collection<? super LineMarkerInfo<?>> result) {
+        for(PsiElement element: elements) {
+            if (element instanceof PsiClass) {
+                PsiClass psiClass = (PsiClass) element;
+                for (PsiMethod psiMethod: psiClass.getMethods()) {
+                    PsiElement identifier = psiMethod.getIdentifyingElement();
+                    if (identifier != null) {
+                        result.add(new LineMarkerInfo<>(
+                                identifier,
+                                identifier.getTextRange(),
+                                getImpactIcon(0.1),
+                                elt -> "[" +
+                                        psiClass.getQualifiedName() +
+                                        " / " +
+                                        psiClass.getName() +
+                                        "] " + psiMethod.getName(),
+                                null,
+                                GutterIconRenderer.Alignment.CENTER));
+                    }
+                }
+
+            }
+        }
+    }
+
+    /*
     @Override
     public LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
         LineMarkerInfo<?> lineMarkerInfo = null;
@@ -52,4 +88,5 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
 
         return lineMarkerInfo;
     }
+    */
 }
