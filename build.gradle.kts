@@ -29,9 +29,8 @@ repositories {
     jcenter()
 }
 dependencies {
-    // implementation("org.jparsec:jparsec:3.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -79,10 +78,6 @@ tasks {
 
     withType<Detekt> {
         jvmTarget = "1.8"
-    }
-
-    named<Test>("test") {
-        useJUnitPlatform()
     }
 
     patchPluginXml {
