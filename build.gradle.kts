@@ -80,6 +80,10 @@ tasks {
         jvmTarget = "1.8"
     }
 
+    named<Test>("test") {
+        useJUnitPlatform()
+    }
+
     patchPluginXml {
         version(properties("pluginVersion"))
         sinceBuild(properties("pluginSinceBuild"))
