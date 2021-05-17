@@ -15,9 +15,13 @@ import java.util.List;
  * loads a profiling report file.
  */
 public abstract class SnapshotParser {
-    public abstract @NotNull String getKey();
 
-
+    /**
+     * Return a human-readable name for a parser (snapshot file format).
+     * Users will see the name in the combo box of the Tools->Load Profiler Snapshot dialog form.
+     *
+     * @return Human-readable name of the parser as a String
+     */
     public abstract @NotNull String getName();
 
     /**

@@ -28,4 +28,6 @@ public abstract class BaseProfilingIconsProvider implements LineMarkerProvider {
     protected StatisticsService getStatisticsService(@NotNull Project project) {
         return project.getService(StatisticsService.class);
     }
+
+    protected static final String CONSTRUCTOR_METHOD_NAME = "<init>";
 }

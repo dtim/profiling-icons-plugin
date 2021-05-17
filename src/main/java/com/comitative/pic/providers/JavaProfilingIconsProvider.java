@@ -47,7 +47,9 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
                             if (className != null) {
                                 CodeReference codeReference = CodeReference.builder()
                                         .setFqClassName(className)
-                                        .setMethodName(psiMethod.isConstructor() ? "<init>" : psiMethod.getName())
+                                        .setMethodName(psiMethod.isConstructor()
+                                                ? CONSTRUCTOR_METHOD_NAME
+                                                : psiMethod.getName())
                                         .build();
                                 List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
 

@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.name.FqName;
@@ -24,12 +25,16 @@ public class KotlinProfilingIconsProvider extends BaseProfilingIconsProvider {
     public LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
         Project currentProject = element.getProject();
         StatisticsService statisticsService = currentProject.getService(StatisticsService.class);
+
+        PsiElement identifier = null;
+        String functionName = null;
+        String qualifiedClassName = null;
+
         if (element instanceof KtNamedFunction) {
             KtNamedFunction function = (KtNamedFunction) element;
-            PsiElement identifier = function.getNameIdentifier();
+            identifier = function.getNameIdentifier();
+            functionName = function.getName();
             KtClassOrObject ktClass = getKtClassOrObject(function);
-            String functionName = function.getName();
-            String qualifiedClassName = null;
             if (ktClass == null) {
                 // It is a file scope function, we can obtain the qualified name from the containing Kotlin file
                 KtFile containingFile = function.getContainingKtFile();
@@ -45,30 +50,50 @@ public class KotlinProfilingIconsProvider extends BaseProfilingIconsProvider {
                     qualifiedClassName = classFqName.asString();
                 }
             }
-
-            if (identifier != null && qualifiedClassName != null && functionName != null) {
-                CodeReference codeReference = CodeReference.builder()
-                        .setFqClassName(qualifiedClassName)
-                        .setMethodName(functionName)
-                        .build();
-                List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
-                if (!records.isEmpty()) {
-                    final GutterMark gutterMark = getImpactGutterMark(records.get(0));
-                    return new LineMarkerInfo<>(
-                            identifier,
-                            identifier.getTextRange(),
-                            gutterMark.getIcon(),
-                            elt -> gutterMark.getTooltipText(),
-                            null,
-                            GutterIconRenderer.Alignment.CENTER);
-                }
+        } else if (element instanceof KtPrimaryConstructor){
+            KtClassOrObject ktClass = ((KtPrimaryConstructor) element).getContainingClassOrObject();
+            identifier = ktClass.getNameIdentifier();
+            functionName = CONSTRUCTOR_METHOD_NAME;
+            FqName classFqName = ktClass.getFqName();
+            if (classFqName != null) {
+                qualifiedClassName = classFqName.asString();
+            }
+        } else if (element instanceof KtSecondaryConstructor) {
+            KtSecondaryConstructor constructor = (KtSecondaryConstructor) element;
+            KtClassOrObject ktClass = constructor.getContainingClassOrObject();
+            identifier = ktClass.getNameIdentifier();
+            functionName = CONSTRUCTOR_METHOD_NAME;
+            FqName classFqName = ktClass.getFqName();
+            if (classFqName != null) {
+                qualifiedClassName = classFqName.asString();
             }
         }
+
+        if (identifier != null && qualifiedClassName != null && functionName != null) {
+            CodeReference codeReference = CodeReference.builder()
+                    .setFqClassName(qualifiedClassName)
+                    .setMethodName(functionName)
+                    .build();
+
+            List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
+            if (!records.isEmpty()) {
+                final GutterMark gutterMark = getImpactGutterMark(records.get(0));
+                return new LineMarkerInfo<>(
+                        identifier,
+                        identifier.getTextRange(),
+                        gutterMark.getIcon(),
+                        elt -> gutterMark.getTooltipText(),
+                        null,
+                        GutterIconRenderer.Alignment.CENTER);
+            }
+        }
+
 
         return null;
     }
 
-    private @Nullable KtClassOrObject getKtClassOrObject(@NotNull KtNamedFunction function) {
+    private @Nullable
+    KtClassOrObject getKtClassOrObject(@NotNull KtNamedFunction function) {
         PsiElement parent = function.getParent();
         if (parent instanceof KtClassBody) {
             PsiElement grandParent = parent.getParent();

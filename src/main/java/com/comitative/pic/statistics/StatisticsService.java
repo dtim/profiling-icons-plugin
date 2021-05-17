@@ -13,6 +13,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * Profiler statistics service.
+ *
+ */
 @Service
 public class StatisticsService {
     private static final Logger LOG = Logger.getInstance(StatisticsService.class);
