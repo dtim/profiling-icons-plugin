@@ -3,15 +3,14 @@ package com.comitative.pic.providers;
 import com.comitative.pic.CodeReference;
 import com.comitative.pic.TimeRecord;
 import com.comitative.pic.statistics.StatisticsService;
+import com.intellij.codeInsight.daemon.GutterMark;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -48,30 +47,22 @@ public class JavaProfilingIconsProvider extends BaseProfilingIconsProvider {
                             if (className != null) {
                                 CodeReference codeReference = CodeReference.builder()
                                         .setFqClassName(className)
-                                        .setMethodName(psiMethod.getName())
+                                        .setMethodName(psiMethod.isConstructor() ? "<init>" : psiMethod.getName())
                                         .build();
-
-                                final List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
+                                List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
 
                                 // A bit of corner-cutting: let's pretend that the first record is the correct one.
                                 // It will really be the case in almost all cases except code blocks
                                 // lesser than a method (lambda etc).
                                 if (!records.isEmpty()) {
-                                    final TimeRecord timeRecord = records.get(0);
-                                    final long sampleCount = timeRecord.getSampleCount();
-                                    final String tooltip = String.format(
-                                            "%.02f%% (%d %s)",
-                                            timeRecord.getRelativeTime() * 100,
-                                            sampleCount,
-                                            sampleCount == 1 ? "sample" : "samples");
+                                    final GutterMark gutterMark = getImpactGutterMark(records.get(0));
                                     result.add(new LineMarkerInfo<>(
                                             identifier,
                                             identifier.getTextRange(),
-                                            getImpactIcon(timeRecord.getRelativeTime()),
-                                            elt -> tooltip,
+                                            gutterMark.getIcon(),
+                                            elt -> gutterMark.getTooltipText(),
                                             null,
                                             GutterIconRenderer.Alignment.CENTER));
-
                                 }
                             }
                         }
