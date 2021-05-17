@@ -1,31 +1,17 @@
 package com.comitative.pic.providers;
 
-import com.comitative.pic.CodeReference;
-import com.comitative.pic.TimeRecord;
-import com.comitative.pic.statistics.StatisticsService;
-import com.intellij.codeInsight.daemon.GutterMark;
+
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.psi.*;
 
-import java.util.List;
-
 public class KotlinProfilingIconsProvider extends BaseProfilingIconsProvider {
-
-    private static final Logger LOG = Logger.getInstance(KotlinProfilingIconsProvider.class);
 
     @Override
     public LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
-        Project currentProject = element.getProject();
-        StatisticsService statisticsService = currentProject.getService(StatisticsService.class);
-
         PsiElement identifier = null;
         String functionName = null;
         String qualifiedClassName = null;
@@ -70,24 +56,8 @@ public class KotlinProfilingIconsProvider extends BaseProfilingIconsProvider {
         }
 
         if (identifier != null && qualifiedClassName != null && functionName != null) {
-            CodeReference codeReference = CodeReference.builder()
-                    .setFqClassName(qualifiedClassName)
-                    .setMethodName(functionName)
-                    .build();
-
-            List<TimeRecord> records = statisticsService.getTimeRecords(codeReference);
-            if (!records.isEmpty()) {
-                final GutterMark gutterMark = getImpactGutterMark(records.get(0));
-                return new LineMarkerInfo<>(
-                        identifier,
-                        identifier.getTextRange(),
-                        gutterMark.getIcon(),
-                        elt -> gutterMark.getTooltipText(),
-                        null,
-                        GutterIconRenderer.Alignment.CENTER);
-            }
+            return createMarker(identifier, qualifiedClassName, functionName);
         }
-
 
         return null;
     }

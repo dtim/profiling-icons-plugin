@@ -23,17 +23,9 @@ import java.util.regex.*;
  */
 public final class AsyncFlatParser extends SnapshotParser {
 
-    private static final Logger log = Logger.getInstance(AsyncFlatParser.class);
-
-    private static final String PARSER_LEY = "async_profiler_flat";
+    private static final Logger LOG = Logger.getInstance(AsyncFlatParser.class);
     private static final String PARSER_NAME = "Async Profiler flat snapshot";
 
-    @Override
-    public @NotNull String getKey() {
-        return PARSER_LEY;
-    }
-
-    // FIXME: use a localized resource bundle
     @Override
     public @NotNull String getName() {
         return PARSER_NAME;
@@ -77,7 +69,7 @@ public final class AsyncFlatParser extends SnapshotParser {
                     return Optional.of(timeRecord);
                 });
             } catch (NumberFormatException e) {
-                log.warn("invalid numeric value: " + e.getMessage());
+                LOG.warn("invalid numeric value: " + e.getMessage());
             }
         }
         return Optional.empty();
