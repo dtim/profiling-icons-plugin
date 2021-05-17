@@ -22,7 +22,8 @@ public class ImpactGutterMark implements GutterMark {
                 scaledRelativeTime,
                 sampleCount,
                 sampleCount == 1 ? "sample" : "samples");
-        this.icon = renderIcon(String.format("%02d", impactClass));
+        String iconText = String.format("%02d", impactClass);
+        this.icon = renderIcon(iconText, DEFAULT_ICON_TEXT_COLOR);
     }
 
     @Override
@@ -30,20 +31,21 @@ public class ImpactGutterMark implements GutterMark {
         return icon;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public @Nullable
     @NlsContexts.Tooltip String getTooltipText() {
         return tooltipText;
     }
 
-    private static Icon renderIcon(String text) {
+    private static Icon renderIcon(String text, JBColor color) {
 
         return new Icon() {
             @Override
             public void paintIcon(Component component, Graphics graphics, int x, int y) {
                 graphics.setColor(JBColor.WHITE);
                 graphics.fillRect(x, y, ICON_SIZE, ICON_SIZE);
-                graphics.setColor(JBColor.RED);
+                graphics.setColor(color);
                 graphics.setFont(ICON_FONT);
                 graphics.drawString(text, x + 1, y + 1 + ICON_FONT_SIZE);
             }
@@ -60,6 +62,7 @@ public class ImpactGutterMark implements GutterMark {
         };
     }
 
+    private static final JBColor DEFAULT_ICON_TEXT_COLOR = JBColor.RED;
     private static final int ICON_SIZE = 12;
     private static final int ICON_FONT_SIZE = 9;
     private static final Font ICON_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, ICON_FONT_SIZE);

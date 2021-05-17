@@ -17,8 +17,8 @@ public abstract class BaseProfilingIconsProvider implements LineMarkerProvider {
 
     protected GutterMark getImpactGutterMark(TimeRecord timeRecord) {
         long impactClass = Math.round(timeRecord.getRelativeTime() * 100.0);
-        if (impactClass < 0) {
-            impactClass = 0;
+        if (impactClass < 1) {
+            impactClass = 1;
         } else if (impactClass > 99) {
             impactClass = 99;
         }
