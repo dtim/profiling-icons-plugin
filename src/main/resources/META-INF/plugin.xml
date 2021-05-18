@@ -35,7 +35,7 @@
         <action
                 id="com.comitative.pic.statistics.LoadStatisticsAction"
                 class="com.comitative.pic.statistics.LoadStatisticsAction"
-                text="Load Profiling Statistics"
+                text="Load Profiler Snapshot"
                 description="Profiling icons"
                 icon="AllIcons.Actions.Profile">
             <add-to-group group-id="ToolsMenu" anchor="last"/>

@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Profiler statistics service.
  *
+ * Provides a project-level storage for the profiling data and a snapshot parser repository.
  */
 @Service
 public class StatisticsService {
@@ -25,6 +26,10 @@ public class StatisticsService {
 
     private final AtomicReference<StatisticsDictionary> statistics = new AtomicReference<>(new StatisticsDictionary());
 
+    /**
+     * Retrieve a name-ordered list of registered parsers (snapshot file formats).
+     * @return an immutable list of snapshot parsers
+     */
     public @NotNull List<SnapshotParser> getParserList() {
         return Collections.unmodifiableList(
                 EP_NAME.getExtensionList()
@@ -33,6 +38,12 @@ public class StatisticsService {
                         .collect(Collectors.toList()));
     }
 
+    /**
+     * Load a snapshot from an input file and replace the old statistics with the new data.
+     * @param file the file to load
+     * @param parser the parser that will be used for processing the input file
+     * @return true if the file is successfully loaded, false if there was an unrecoverable error during the processing
+     */
     public boolean loadFile(@NotNull File file, @NotNull SnapshotParser parser) {
         try (InputStream inputStream = new FileInputStream(file)) {
             StatisticsDictionary dictionary = new StatisticsDictionary();
@@ -51,6 +62,13 @@ public class StatisticsService {
         return true;
     }
 
+    /**
+     * Retrieves the list of time records that correspond to the given code reference.
+     * @param codeReference a code reference to search
+     * @return a list of found time records (empty if no records were found)
+     * @see TimeRecord
+     * @see CodeReference
+     */
     public @NotNull List<TimeRecord> getTimeRecords(@NotNull CodeReference codeReference) {
         LOG.trace("Requested time records for " + codeReference);
         return statistics.get().getTimeRecords(codeReference);
