@@ -6,7 +6,7 @@
 
 <!-- Plugin description -->
 The plugin annotates Java/Kotlin methods with gutter icons that display the approximate
-percentage of time that method was executed during the profiling. The profiler snapshot
+percentage of time the method was executed during the profiling. The profiler snapshot
 to visualize is loaded using the Tools/Load Profiler Snapshot menu action.
 
 The plugin is a work in progress. It currently supports Async Profiler
@@ -15,7 +15,7 @@ flat text snapshots only.
 
 ## Installation
 
-The plugin has not yet been released. After the release, it can be installed using the common procedures.
+The plugin has not yet been released. After the release, it can be installed in the usual way.
 
 - Using IDE built-in plugin system:
   
